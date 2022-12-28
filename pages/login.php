@@ -1,10 +1,25 @@
 <?php
 
     session_start();
+
+    if ( !isset( $_SESSION['login_form_csrf_token'] ) ) {
+      // generate csrf token
+      $_SESSION['login_form_csrf_token'] = bin2hex( random_bytes(32) );
+    }
+
     $database = new PDO('mysql:host=devkinsta_db;dbname=UserManagement', 'root', 'zfIy4pGBfg44X1nE');
 
     //make sure it's Form POST requests
     if( $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+      // verify the csrf token is correct or not
+      if ( $_POST['login_form_csrf_token'] !== $_SESSION['login_form_csrf_token'] )
+      {
+        die("Nice try! But I'm smarter than you!");
+      }
+
+      // remove the csrf token from the session data
+      unset( $_SESSION['login_form_csrf_token'] );
         //trigger login process
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -89,6 +104,11 @@
           <div class="d-grid">
             <button type="submit" class="btn btn-primary btn-fu">Login</button>
           </div>
+          <input 
+                type="hidden"
+                name="login_form_csrf_token"
+                value="<?php echo $_SESSION['login_form_csrf_token']; ?>"
+            />
         </form>
       </div>
     </div>

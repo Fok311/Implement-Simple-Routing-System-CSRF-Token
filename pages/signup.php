@@ -2,9 +2,24 @@
     
     session_start();
 
+    if ( !isset( $_SESSION['signup_form_csrf_token'] ) ) {
+      // generate csrf token
+      $_SESSION['signup_form_csrf_token'] = bin2hex( random_bytes(32) );
+    }
+
     $database = new PDO('mysql:host=devkinsta_db;dbname=UserManagement', 'root', 'zfIy4pGBfg44X1nE');
 
     if( $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+      // verify the csrf token is correct or not
+      if ( $_POST['signup_form_csrf_token'] !== $_SESSION['signup_form_csrf_token'] )
+      {
+        die("Nice try! But I'm smarter than you!");
+      }
+
+      // remove the csrf token from the session data
+      unset( $_SESSION['signup_form_csrf_token'] );
+
         //trigger sign-up process
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -106,6 +121,11 @@
               Sign Up
             </button>
           </div>
+          <input 
+                type="hidden"
+                name="signup_form_csrf_token"
+                value="<?php echo $_SESSION['signup_form_csrf_token']; ?>"
+                />
         </form>
       </div>
     </div>
