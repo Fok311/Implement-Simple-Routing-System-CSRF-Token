@@ -7,9 +7,9 @@
         //delete the user's session data
         unset( $_SESSION['user']);
         // redirect user back to index
-        header( 'Location: /');
+        header( 'Location: /login');
     } else {
         // redirect to login page
-        header( 'Location: /login.php');
+        header( 'Location: /login');
         exit;
     }

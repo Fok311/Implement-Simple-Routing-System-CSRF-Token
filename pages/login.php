@@ -31,7 +31,7 @@
                 ];
 
                 // redirect user back to index
-                header('Location: /');
+                header('Location: /home');
                 exit;
                 
             } else {
@@ -94,7 +94,7 @@
     </div>
     <!-- Go back link -->
     <div class="text-center">
-      <a href="index.html" class="text-decoration-none"
+      <a href="/index" class="text-decoration-none"
         ><i class="bi bi-arrow-left-circle"></i> Go back</a
       >
     </div>
