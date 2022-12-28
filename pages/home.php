@@ -1,6 +1,12 @@
 <?php
     
     session_start();
+
+    if ( !isset( $_SESSION['home_form_csrf_token'] ) ) {
+        // generate csrf token
+        $_SESSION['home_form_csrf_token'] = bin2hex( random_bytes(32) );
+      }
+
     $database = new PDO('mysql:host=devkinsta_db;dbname=UserManagement', 'root', 'zfIy4pGBfg44X1nE'); //Your database password
 
     $query = $database->prepare('SELECT * FROM students');
@@ -14,6 +20,14 @@
         var_dump($_POST['action']);
 
         if($_POST['action'] === 'add') {
+
+            if ( $_POST['home_form_csrf_token'] !== $_SESSION['home_form_csrf_token'] )
+      {
+        die("Nice try! But I'm smarter than you!");
+      }
+
+      // remove the csrf token from the session data
+      unset( $_SESSION['home_form_csrf_token'] );
             //add new student
             $statement = $database->prepare(
                 'INSERT INTO students (`name`) 
@@ -89,6 +103,11 @@
             value="add"
             />
           <button class="btn btn-primary btn-sm rounded ms-2">Add</button>
+          <input 
+                type="hidden"
+                name="home_form_csrf_token"
+                value="<?php echo $_SESSION['home_form_csrf_token']; ?>"
+            />
     </form>
         <?php endif; ?>
       </div>
